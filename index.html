@@ -1,0 +1,37 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='container'></div>
+    <script type='text/javascript'>
+    // Load the minimum number of scripts here, and allow the rest of the resource pool to have a prettier face.
+    let script_list = [
+      'util/util.config.js',
+      'util/util.canvas.js',
+      'core/game.loop.js',
+      'core/game.update.js',
+      'core/game.render.js',
+      'core/game.camera.js',
+      'core/scene.manager.js',
+      'world/scene.core.js',
+      'world/scene.loading.js',
+      'game.js',
+    ];
+    var loadJS = function(url, location, onloadCallback) {
+      let s = document.createElement('script');
+      s.src = url;
+      s.type = 'text/javascript';
+      s.async = false;
+      s.onload = onloadCallback;
+      s.onreadystatechange = onloadCallback;
+      location.append(s);
+    };
+
+    let scripts_loaded = 0;
+
+    for (let i in script_list) {
+      loadJS('js/'+script_list[i], document.body, () => {(++scripts_loaded == script_list.length) ? game.startGame() : null });
+    }
+    </script>
+  </body>
+</html>
