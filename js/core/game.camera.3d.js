@@ -6,6 +6,11 @@ class Camera3D extends Camera {
     this.fog_density = 0;
     this.height = 1000;
     this.depth = 1 / Math.tan((this.fov/2) * Math.PI/180);
+    this.facing = new Vector({
+      x: 1,
+      y: 1,
+      z: 1,
+    });
   }
 
   update() {

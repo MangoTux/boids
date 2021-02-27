@@ -15,7 +15,8 @@ class Boid extends Creature {
       avoid_distance: 30,
       homesick_distance: 350,
       velocity_max: 150,
-    }
+      force_max: 0.03,
+    };
     this.colony = "base";
     this.factor = {
       separation: 1,
@@ -149,7 +150,6 @@ class Boid extends Creature {
       this.rules[index].vector_res = this[rule.function](neighbors);
       velocity.add(this.rules[index].vector_res);
     }
-    velocity.clamp(this.config.velocity_max);
     if (this.active && keys.isPressed.space()) {
       console.log(this);
       throw "error";
@@ -162,6 +162,14 @@ class Boid extends Creature {
     this.position = position.getVector();
   }
 
+  project() {
+    let projection_vector = new Vector(this.scope.camera.facing.getVector());
+    let facing = new Vector(this.velocity.getVector());
+    projection_vector.normalize();
+    facing.normalize();
+    projection_vector.add(this.velocity);
+    return projection_vector.getVector();
+  }
   // This is currently abstracted to a 2d projection;
   // Will update based on relative camera positioning and depth.
   render(o_x, o_y) {
@@ -173,9 +181,12 @@ class Boid extends Creature {
     /*
     Given a base position, base heading, and camera position/heading, figure out projection of prism
     */
-    let theta = Math.atan2(-this.velocity.getVector().y, this.velocity.getVector().x);
+    let projection_angle = this.project();
+    let theta = Math.atan2(-projection_angle.y, projection_angle.x);
+    let sigma = Math.atan(-projection_angle.z, projection_angle.x);
     const sin_theta = Math.sin(theta);
     const cos_theta = Math.cos(theta);
+    const cos_sigma = Math.cos(sigma);
     let color = this.active ? "red" : this.render_fillStyle;
     for (const neighbor of this.getNeighbors()) {
       if (neighbor.active) {
@@ -189,8 +200,8 @@ class Boid extends Creature {
         y: this.position.y - this.height/2 * cos_theta - o_y
       },
       {
-        x: this.position.x + this.length * cos_theta - o_x,
-        y: this.position.y - this.length * sin_theta - o_y
+        x: this.position.x + this.length * cos_theta * cos_sigma - o_x,
+        y: this.position.y - this.length * sin_theta * cos_sigma - o_y
       },
       {
         x: this.position.x + this.height/2 * sin_theta - o_x,

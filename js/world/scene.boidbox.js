@@ -22,7 +22,7 @@ class BoidboxScene extends Scene {
     this.entities.eggs = [];
     for (let i = 0; i < 5; i++) {
       this.entities.eggs.push(
-        new Egg(this, Math.randomInt(0, this.width), Math.randomInt(0, this.height), 50)
+        new Egg(this, Math.randomInt(0, this.width), Math.randomInt(0, this.height), 0)
       );
     }
   }
